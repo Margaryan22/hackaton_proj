@@ -32,7 +32,7 @@ jobs:
         run: pnpm --filter @hackathon/web exec playwright install --with-deps chromium
       - name: E2E smoke
         run: pnpm test:e2e
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: failure()
         with:
           name: playwright-report
