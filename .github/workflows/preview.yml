@@ -25,7 +25,7 @@ jobs:
       - name: Check secrets
         id: secrets
         run: echo "ok=${{ secrets.VERCEL_TOKEN != '' }}" >> "$GITHUB_OUTPUT"
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         if: steps.secrets.outputs.ok == 'true'
       - uses: pnpm/action-setup@v4
         if: steps.secrets.outputs.ok == 'true'
