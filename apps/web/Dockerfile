@@ -7,7 +7,9 @@ FROM base AS build
 COPY . .
 RUN pnpm install --frozen-lockfile --filter @hackathon/web...
 # Реальные значения env передаются в рантайме; при сборке валидацию пропускаем
-ENV SKIP_ENV_VALIDATION=1
+# Адрес бэкенда вшивается в прокси /api/v1/* при сборке
+ARG API_URL=http://localhost:5080
+ENV SKIP_ENV_VALIDATION=1 API_URL=$API_URL
 RUN pnpm --filter @hackathon/web build
 
 FROM node:24-alpine AS runner

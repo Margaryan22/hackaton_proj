@@ -1,0 +1,45 @@
+// Единое окружение разработки: одинаковое на Windows, macOS, Linux и в GitHub Codespaces.
+// Локально нужен Docker Desktop и VS Code с расширением Dev Containers → «Reopen in Container».
+// Внутри: Node 24, pnpm, .NET 10, jq, Playwright и Postgres 17 (сервис db, localhost:5432).
+{
+  "name": "hackathon",
+  "dockerComposeFile": "compose.yml",
+  "service": "app",
+  "runServices": ["app", "db"],
+  "workspaceFolder": "/workspaces/hackaton_proj",
+  "shutdownAction": "stopCompose",
+
+  "features": {
+    "ghcr.io/devcontainers/features/github-cli:1": {},
+    "ghcr.io/devcontainers/features/dotnet:2": { "version": "10.0" },
+    "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {}
+  },
+
+  "onCreateCommand": "sudo apt-get update && sudo apt-get install -y --no-install-recommends jq postgresql-client && sudo chown -R node:node node_modules apps/web/node_modules /home/node/.local/share/pnpm /home/node/.nuget",
+  "postCreateCommand": "bash scripts/setup.sh",
+
+  "forwardPorts": [3000, 5080, 5432],
+  "portsAttributes": {
+    "3000": { "label": "web", "onAutoForward": "openBrowser" },
+    "5080": { "label": "api", "onAutoForward": "silent" },
+    "5432": { "label": "postgres", "onAutoForward": "silent" }
+  },
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "esbenp.prettier-vscode",
+        "dbaeumer.vscode-eslint",
+        "bradlc.vscode-tailwindcss",
+        "vitest.explorer",
+        "ms-playwright.playwright",
+        "editorconfig.editorconfig",
+        "github.vscode-pull-request-github",
+        "ms-dotnettools.csdevkit",
+        "ckolkman.vscode-postgres"
+      ]
+    }
+  },
+
+  "remoteUser": "node"
+}

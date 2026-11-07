@@ -1,0 +1,13 @@
+{
+  "recommendations": [
+    "esbenp.prettier-vscode",
+    "dbaeumer.vscode-eslint",
+    "bradlc.vscode-tailwindcss",
+    "vitest.explorer",
+    "ms-playwright.playwright",
+    "ms-vscode-remote.remote-containers",
+    "editorconfig.editorconfig",
+    "github.vscode-pull-request-github",
+    "ms-dotnettools.csdevkit"
+  ]
+}

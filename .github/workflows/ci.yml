@@ -9,24 +9,57 @@ concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
 
+permissions:
+  contents: read
+  pull-requests: write # комментарий с покрытием тестами
+
 env:
   NEXT_PUBLIC_APP_URL: http://localhost:3100
+  # Адрес бэкенда для e2e: вшивается во фронт при сборке (прокси /api/v1/*)
+  API_URL: http://localhost:5100
+  ConnectionStrings__Default: Host=localhost;Port=5432;Database=hackathon;Username=postgres;Password=postgres
+  DOTNET_CLI_TELEMETRY_OPTOUT: "1"
 
 jobs:
   check:
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_DB: hackathon
+          POSTGRES_PASSWORD: postgres
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd pg_isready --health-interval 5s --health-timeout 5s --health-retries 10
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "10.0.x"
+          cache: true
+          cache-dependency-path: apps/api/**/*.csproj
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with:
           node-version-file: .nvmrc
           cache: pnpm
+      - name: Turborepo cache
+        uses: actions/cache@v4
+        with:
+          path: .turbo/cache
+          key: turbo-${{ runner.os }}-${{ github.sha }}
+          restore-keys: turbo-${{ runner.os }}-
       - run: pnpm install --frozen-lockfile
       - run: pnpm format:check
       - run: pnpm lint
       - run: pnpm typecheck
       - run: pnpm test
+      - name: Coverage report
+        if: github.event_name == 'pull_request' && !cancelled()
+        uses: davelosert/vitest-coverage-report-action@v2
+        with:
+          working-directory: apps/web
       - run: pnpm build
       - name: Install Playwright browsers
         run: pnpm --filter @hackathon/web exec playwright install --with-deps chromium

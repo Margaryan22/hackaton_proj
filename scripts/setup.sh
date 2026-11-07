@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Ставит всё нужное для разработки одной командой: Node 24, pnpm, зависимости, браузер для e2e, .env.
-# macOS — через Homebrew, Windows — через winget (запускать в Git Bash).
+# macOS — через Homebrew, Windows — через winget (запускать в Git Bash), Linux/Dev Container — Node уже есть.
 # Запуск из корня репозитория: bash scripts/setup.sh
 # Повторный запуск безопасен: уже установленное пропускается.
 set -euo pipefail
@@ -59,15 +59,25 @@ say "Зависимости"
 pnpm install
 
 say "Браузер для e2e-тестов"
-pnpm --filter @hackathon/web exec playwright install chromium
+if [ "$OS" = linux ]; then # в контейнере/Linux нужны ещё системные библиотеки браузера
+  pnpm --filter @hackathon/web exec playwright install --with-deps chromium
+else
+  pnpm --filter @hackathon/web exec playwright install chromium
+fi
 
 say "Переменные окружения"
 if [ -f apps/web/.env.local ]; then echo "apps/web/.env.local уже есть"
 else cp .env.example apps/web/.env.local && echo "Создан apps/web/.env.local"; fi
 
-if ls apps/*/*.csproj >/dev/null 2>&1 && ! has dotnet; then
+if [ -d apps/api ] && ! has dotnet; then
   say ".NET SDK для бэкенда"
   if [ "$OS" = mac ]; then brew install --cask dotnet-sdk; else pkg dotnet "" Microsoft.DotNet.SDK.10; fi
 fi
 
-printf '\n✅ Готово. Запуск: pnpm dev → http://localhost:3000\n'
+if has dotnet; then
+  say "Пакеты .NET"
+  dotnet restore apps/api/Api.slnx
+  (cd apps/api && dotnet tool restore)
+fi
+
+printf '\n✅ Готово. Запуск: pnpm dev → фронт http://localhost:3000, бэк http://localhost:5080 (нужен Postgres)\n'
