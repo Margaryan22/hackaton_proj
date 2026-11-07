@@ -9,6 +9,10 @@ concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
 
+permissions:
+  contents: read
+  pull-requests: write # комментарий с покрытием тестами
+
 env:
   NEXT_PUBLIC_APP_URL: http://localhost:3100
 
@@ -22,11 +26,22 @@ jobs:
         with:
           node-version-file: .nvmrc
           cache: pnpm
+      - name: Turborepo cache
+        uses: actions/cache@v4
+        with:
+          path: .turbo/cache
+          key: turbo-${{ runner.os }}-${{ github.sha }}
+          restore-keys: turbo-${{ runner.os }}-
       - run: pnpm install --frozen-lockfile
       - run: pnpm format:check
       - run: pnpm lint
       - run: pnpm typecheck
       - run: pnpm test
+      - name: Coverage report
+        if: github.event_name == 'pull_request' && !cancelled()
+        uses: davelosert/vitest-coverage-report-action@v2
+        with:
+          working-directory: apps/web
       - run: pnpm build
       - name: Install Playwright browsers
         run: pnpm --filter @hackathon/web exec playwright install --with-deps chromium

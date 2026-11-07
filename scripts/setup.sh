@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Ставит всё нужное для разработки одной командой: Node 24, pnpm, зависимости, браузер для e2e, .env.
-# macOS — через Homebrew, Windows — через winget (запускать в Git Bash).
+# macOS — через Homebrew, Windows — через winget (запускать в Git Bash), Linux/Dev Container — Node уже есть.
 # Запуск из корня репозитория: bash scripts/setup.sh
 # Повторный запуск безопасен: уже установленное пропускается.
 set -euo pipefail
@@ -59,7 +59,11 @@ say "Зависимости"
 pnpm install
 
 say "Браузер для e2e-тестов"
-pnpm --filter @hackathon/web exec playwright install chromium
+if [ "$OS" = linux ]; then # в контейнере/Linux нужны ещё системные библиотеки браузера
+  pnpm --filter @hackathon/web exec playwright install --with-deps chromium
+else
+  pnpm --filter @hackathon/web exec playwright install chromium
+fi
 
 say "Переменные окружения"
 if [ -f apps/web/.env.local ]; then echo "apps/web/.env.local уже есть"

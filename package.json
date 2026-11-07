@@ -6,16 +6,16 @@
     "node": ">=24"
   },
   "scripts": {
-    "dev": "pnpm -r --parallel dev",
-    "build": "pnpm -r build",
-    "lint": "pnpm -r lint",
-    "typecheck": "pnpm -r typecheck",
-    "test": "pnpm -r test",
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck",
+    "test": "turbo run test",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "check": "pnpm format:check && pnpm lint && pnpm typecheck && pnpm test",
     "prepare": "husky",
-    "test:e2e": "pnpm -r --if-present test:e2e"
+    "test:e2e": "turbo run test:e2e"
   },
   "devDependencies": {
     "@commitlint/cli": "^19",
@@ -23,7 +23,8 @@
     "husky": "^9",
     "lint-staged": "^16",
     "prettier": "^3",
-    "prettier-plugin-tailwindcss": "^0.6"
+    "prettier-plugin-tailwindcss": "^0.6",
+    "turbo": "^2.11.10"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx,mjs,cjs,json,md,yml,yaml,css}": "prettier --write"

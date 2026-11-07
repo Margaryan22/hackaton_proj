@@ -8,5 +8,12 @@ export default defineConfig({
     environment: "jsdom",
     setupFiles: ["./vitest.setup.ts"],
     include: ["src/**/*.test.{ts,tsx}"],
+    coverage: {
+      provider: "v8",
+      include: ["src/**/*.{ts,tsx}"],
+      exclude: ["src/**/*.test.{ts,tsx}", "src/components/ui/**"],
+      reporter: ["text-summary", "json-summary", "json"],
+      reportOnFailure: true,
+    },
   },
 });
