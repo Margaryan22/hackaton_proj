@@ -1,10 +1,38 @@
+# Запуск прод-образов локально: docker compose up --build → http://localhost:3000
 services:
   web:
     build:
       context: .
       dockerfile: apps/web/Dockerfile
+      args:
+        API_URL: http://api:8080
     ports:
       - "3000:3000"
     env_file:
       - path: apps/web/.env.local
         required: false
+    depends_on: [api]
+
+  api:
+    build: apps/api
+    environment:
+      ConnectionStrings__Default: Host=db;Port=5432;Database=hackathon;Username=postgres;Password=postgres
+    ports:
+      - "5080:8080"
+    depends_on:
+      db: { condition: service_healthy }
+
+  db:
+    image: postgres:17
+    environment:
+      POSTGRES_DB: hackathon
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres"]
+      interval: 5s
+      retries: 10
+
+volumes:
+  pgdata:

@@ -6,7 +6,8 @@
 
 Нужны Docker Desktop и VS Code с расширением **Dev Containers**.
 Открой папку проекта в VS Code → **Reopen in Container**. Всё остальное (Node 24, pnpm, .NET 10,
-зависимости, браузер для e2e) поставится внутри контейнера само. Порт 3000 пробрасывается наружу.
+Postgres, зависимости, браузер для e2e) поставится внутри контейнера само.
+`pnpm dev` запускает фронт (http://localhost:3000) и бэкенд (http://localhost:5080) вместе.
 
 Без Docker — то же самое в облаке: **Code → Codespaces → Create codespace on main**.
 
@@ -29,7 +30,9 @@ cp .env.example apps/web/.env.local
 pnpm dev
 ```
 
-Открыть http://localhost:3000. Healthcheck: `/api/health`.
+Открыть http://localhost:3000. Без контейнера бэкенду нужны .NET 10 SDK и Postgres на `localhost:5432`.
+Healthcheck: фронт — `/api/health`, бэкенд — `/api/v1/health`, бэкенд + БД — `/api/v1/health/ready`.
+Архитектура: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
 ## Скрипты
 
@@ -40,7 +43,7 @@ pnpm dev
 | `pnpm check`                | формат + линт + типы + тесты (как в CI) |
 | `pnpm test`                 | тесты с отчётом о покрытии              |
 | `pnpm format`               | Prettier                                |
-| `docker compose up --build` | запуск прод-образа локально             |
+| `docker compose up --build` | прод-образы локально: web + api + db    |
 
 ## Правила
 

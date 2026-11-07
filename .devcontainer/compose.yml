@@ -1,0 +1,35 @@
+# Окружение разработки: контейнер с инструментами + Postgres.
+# Приложение живёт в сетевом пространстве базы, поэтому БД доступна как localhost:5432 —
+# так же, как без контейнера. Строки подключения одинаковые везде.
+services:
+  app:
+    image: mcr.microsoft.com/devcontainers/typescript-node:24-bookworm
+    command: sleep infinity
+    network_mode: service:db
+    volumes:
+      # Родительская папка: соседние репозитории тоже доступны в контейнере
+      - ../..:/workspaces:cached
+      # node_modules и кэш pnpm — в томах Docker: на Windows в разы быстрее общей папки
+      - node_modules:/workspaces/hackaton_proj/node_modules
+      - web_node_modules:/workspaces/hackaton_proj/apps/web/node_modules
+      - pnpm_store:/home/node/.local/share/pnpm
+      - nuget:/home/node/.nuget/packages
+    environment:
+      ConnectionStrings__Default: Host=localhost;Port=5432;Database=hackathon;Username=postgres;Password=postgres
+
+  db:
+    image: postgres:17
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: hackathon
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  node_modules:
+  web_node_modules:
+  pnpm_store:
+  nuget:
+  pgdata:
