@@ -15,7 +15,7 @@
     "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {}
   },
 
-  "onCreateCommand": "sudo apt-get update && sudo apt-get install -y --no-install-recommends jq postgresql-client && sudo chown -R node:node node_modules apps/web/node_modules /home/node/.local/share/pnpm /home/node/.nuget",
+  "onCreateCommand": "sudo apt-get update && sudo apt-get install -y --no-install-recommends jq postgresql-client && sudo chown -R node:node node_modules apps/web/node_modules /home/node/.local /home/node/.nuget",
   "postCreateCommand": "bash scripts/setup.sh",
 
   "forwardPorts": [3000, 5080, 5432],
