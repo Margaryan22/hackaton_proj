@@ -7,3 +7,6 @@ next-env.d.ts
 graphify-out
 **/bin/
 **/obj/
+# Генерируются release-please
+CHANGELOG.md
+.release-please-manifest.json
