@@ -10,3 +10,9 @@ test("healthcheck отвечает ok", async ({ request }) => {
   expect(res.ok()).toBe(true);
   expect(await res.json()).toEqual({ status: "ok" });
 });
+
+test("бэкенд доступен через фронт и видит базу", async ({ request }) => {
+  const res = await request.get("/api/v1/health/ready");
+  expect(res.ok()).toBe(true);
+  expect(await res.text()).toBe("Healthy");
+});

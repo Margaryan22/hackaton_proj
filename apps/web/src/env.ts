@@ -9,12 +9,15 @@ import { z } from "zod";
 export const env = createEnv({
   server: {
     NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
+    // Адрес бэкенда (.NET). Запросы /api/v1/* проксируются туда — см. next.config.ts
+    API_URL: z.url().default("http://localhost:5080"),
   },
   client: {
     NEXT_PUBLIC_APP_URL: z.url(),
   },
   runtimeEnv: {
     NODE_ENV: process.env.NODE_ENV,
+    API_URL: process.env.API_URL,
     NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
   },
   // SKIP_ENV_VALIDATION=1 — для сборки Docker-образа/линта без реальных секретов

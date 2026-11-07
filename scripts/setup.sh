@@ -69,9 +69,15 @@ say "Переменные окружения"
 if [ -f apps/web/.env.local ]; then echo "apps/web/.env.local уже есть"
 else cp .env.example apps/web/.env.local && echo "Создан apps/web/.env.local"; fi
 
-if ls apps/*/*.csproj >/dev/null 2>&1 && ! has dotnet; then
+if [ -d apps/api ] && ! has dotnet; then
   say ".NET SDK для бэкенда"
   if [ "$OS" = mac ]; then brew install --cask dotnet-sdk; else pkg dotnet "" Microsoft.DotNet.SDK.10; fi
 fi
 
-printf '\n✅ Готово. Запуск: pnpm dev → http://localhost:3000\n'
+if has dotnet; then
+  say "Пакеты .NET"
+  dotnet restore apps/api/Api.slnx
+  (cd apps/api && dotnet tool restore)
+fi
+
+printf '\n✅ Готово. Запуск: pnpm dev → фронт http://localhost:3000, бэк http://localhost:5080 (нужен Postgres)\n'

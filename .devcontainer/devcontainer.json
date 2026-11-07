@@ -1,13 +1,13 @@
 // Единое окружение разработки: одинаковое на Windows, macOS, Linux и в GitHub Codespaces.
 // Локально нужен Docker Desktop и VS Code с расширением Dev Containers → «Reopen in Container».
+// Внутри: Node 24, pnpm, .NET 10, jq, Playwright и Postgres 17 (сервис db, localhost:5432).
 {
   "name": "hackathon",
-  "image": "mcr.microsoft.com/devcontainers/typescript-node:24-bookworm",
-
-  // Монтируем родительскую папку, чтобы соседние репозитории тоже были доступны в контейнере
-  // (в Codespaces эти две настройки игнорируются).
-  "workspaceMount": "source=${localWorkspaceFolder}/..,target=/workspaces,type=bind",
-  "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
+  "dockerComposeFile": "compose.yml",
+  "service": "app",
+  "runServices": ["app", "db"],
+  "workspaceFolder": "/workspaces/hackaton_proj",
+  "shutdownAction": "stopCompose",
 
   "features": {
     "ghcr.io/devcontainers/features/github-cli:1": {},
@@ -15,18 +15,15 @@
     "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {}
   },
 
-  // node_modules и кэш pnpm — в томах Docker: на Windows это в разы быстрее, чем через общую папку.
-  "mounts": [
-    "source=hackathon-node_modules,target=${containerWorkspaceFolder}/node_modules,type=volume",
-    "source=hackathon-web-node_modules,target=${containerWorkspaceFolder}/apps/web/node_modules,type=volume",
-    "source=hackathon-pnpm-store,target=/home/node/.local/share/pnpm,type=volume"
-  ],
-
-  "onCreateCommand": "sudo apt-get update && sudo apt-get install -y --no-install-recommends jq && sudo chown -R node:node node_modules apps/web/node_modules /home/node/.local/share/pnpm",
+  "onCreateCommand": "sudo apt-get update && sudo apt-get install -y --no-install-recommends jq postgresql-client && sudo chown -R node:node node_modules apps/web/node_modules /home/node/.local/share/pnpm /home/node/.nuget",
   "postCreateCommand": "bash scripts/setup.sh",
 
-  "forwardPorts": [3000],
-  "portsAttributes": { "3000": { "label": "web", "onAutoForward": "openBrowser" } },
+  "forwardPorts": [3000, 5080, 5432],
+  "portsAttributes": {
+    "3000": { "label": "web", "onAutoForward": "openBrowser" },
+    "5080": { "label": "api", "onAutoForward": "silent" },
+    "5432": { "label": "postgres", "onAutoForward": "silent" }
+  },
 
   "customizations": {
     "vscode": {
@@ -38,7 +35,8 @@
         "ms-playwright.playwright",
         "editorconfig.editorconfig",
         "github.vscode-pull-request-github",
-        "ms-dotnettools.csdevkit"
+        "ms-dotnettools.csdevkit",
+        "ckolkman.vscode-postgres"
       ]
     }
   },

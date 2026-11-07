@@ -1,0 +1,11 @@
+{
+  "name": "@hackathon/api",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "dotnet watch --project src/Api run",
+    "build": "dotnet build -c Release",
+    "lint": "dotnet format --verify-no-changes",
+    "test": "dotnet test"
+  }
+}
