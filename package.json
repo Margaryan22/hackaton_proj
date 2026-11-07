@@ -29,5 +29,5 @@
   "lint-staged": {
     "*.{js,jsx,ts,tsx,mjs,cjs,json,md,yml,yaml,css}": "prettier --write"
   },
-  "version": "0.2.0"
+  "version": "0.2.1"
 }
