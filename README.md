@@ -2,6 +2,15 @@
 
 ## Быстрый старт
 
+Одной командой (macOS — Terminal, Windows — Git Bash):
+
+```bash
+bash scripts/setup.sh   # Node 24, pnpm, зависимости, браузер для e2e, .env
+pnpm dev
+```
+
+Вручную:
+
 ```bash
 nvm use            # Node 24
 corepack enable    # pnpm из packageManager
