@@ -23,7 +23,8 @@ pkg() { # $1 — команда, $2 — пакет brew, $3 — пакет winge
       has brew || { echo "❌ Нужен Homebrew: https://brew.sh"; exit 1; }
       brew install "$2" ;;
     win)
-      winget.exe install -e --id "$3" --accept-source-agreements --accept-package-agreements
+      winget.exe install -e --id "$3" --accept-source-agreements --accept-package-agreements ||
+        winget.exe upgrade -e --id "$3" --accept-source-agreements --accept-package-agreements || true
       echo "⚠️  Установлен $1. Перезапусти Git Bash и запусти скрипт снова, чтобы обновился PATH."
       exit 0 ;;
     *) echo "❌ Поставь $1 вручную и запусти скрипт снова"; exit 1 ;;
@@ -48,7 +49,9 @@ node -v
 
 say "pnpm"
 if ! has pnpm; then
-  corepack enable 2>/dev/null || npm install -g corepack && corepack enable
+  # corepack на Windows без прав администратора не может создать шимы в Program Files — тогда ставим pnpm через npm
+  corepack enable 2>/dev/null ||
+    npm install -g "$(node -p 'require("./package.json").packageManager')"
 fi
 pnpm -v
 

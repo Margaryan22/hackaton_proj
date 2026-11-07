@@ -1,0 +1,4 @@
+# Единые переводы строк LF на всех ОС (иначе на Windows ломаются sh-скрипты и prettier --check)
+* text=auto eol=lf
+*.{cmd,bat,ps1} text eol=crlf
+*.{png,jpg,jpeg,gif,ico,webp,woff,woff2} binary
