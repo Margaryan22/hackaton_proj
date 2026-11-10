@@ -18,12 +18,12 @@
     "test:e2e": "turbo run test:e2e"
   },
   "devDependencies": {
-    "@commitlint/cli": "^19",
-    "@commitlint/config-conventional": "^19",
+    "@commitlint/cli": "^21",
+    "@commitlint/config-conventional": "^21",
     "husky": "^9",
-    "lint-staged": "^16",
+    "lint-staged": "^17",
     "prettier": "^3",
-    "prettier-plugin-tailwindcss": "^0.6",
+    "prettier-plugin-tailwindcss": "^0.8",
     "turbo": "^2.11.10"
   },
   "lint-staged": {
